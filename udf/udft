@@ -1,0 +1,15 @@
+lterp 2 2 expr expr
+direct
+/stornext/home/carlos.bastarz/tools/grads_scripts/udf/lterp/lterp
+lterp.in
+lterp.out
+regrid2 1 8 expr value value char value value value value
+sequential
+/usr/local/grads_scripts/udf/regrid2/regrid2.exe
+udf.regrid.gfi
+udf.regrid.gfo
+eofudf 2 6 expr value value value value char
+sequential
+/usr/local/grads_scripts/udf/eof/eofudf
+eofudf.in
+eofudf.out

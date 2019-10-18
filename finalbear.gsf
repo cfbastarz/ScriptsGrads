@@ -1,0 +1,38 @@
+***************************************************************************************
+*       $Id: finalbear.gsf,v 1.1 2011/01/29 06:43:45 bguan Exp $
+*       Copyright (C) 2010 Bin Guan.
+*       Distributed under GNU/GPL.
+*
+*       Reference:
+*       http://mathforum.org/library/drmath/view/55417.html
+*       http://www.movable-type.co.uk/scripts/latlong.html
+***************************************************************************************
+function finalbear(lon1,lon2,lat1,lat2)
+*
+* Calculate final bearing from point 1 to point 2.
+* Input unit: degree.
+* Output unit: degree.
+*
+* switch the two points
+tmp=lon1
+lon1=lon2
+lon2=tmp
+tmp=lat1
+lat1=lat2
+lat2=tmp
+* now calculate the initial bearing as in initbear.gsf
+pi=3.14159
+phi1=lat1/180*pi
+phi2=lat2/180*pi
+lambda1=lon1/180*pi
+lambda2=lon2/180*pi
+tmp_a=math_sin(lambda2-lambda1)*math_cos(phi2)
+tmp_b=math_cos(phi1)*math_sin(phi2)-math_sin(phi1)*math_cos(phi2)*math_cos(lambda2-lambda1)
+bearing=math_atan2(tmp_a,tmp_b)
+* range of bearing thus obtained: -pi to pi
+bearing=bearing/pi*180
+bearing=math_mod(bearing+180,360)
+* now range is [0,360)
+* note 1: must convert to degrees before using math_mod since 360 is an integer but 2*pi is not.
+* note 2: 180 (instead of 360 is used as an offset, to effectively rotate the result by 180 degrees.
+return bearing

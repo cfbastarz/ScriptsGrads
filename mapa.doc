@@ -1,0 +1,66 @@
+O grads agora tem a opcao de diversificacao de mapas. Para trocar um mapa basta
+usar o comando:
+
+'set mpdset [nome do arquivo 1] [nome do arquivo 2]...[nome do arquivo 9]'
+
+A quantidade de nome de nome de mapas e e'limitado sendo 9 o numero maximo.
+Caso seja necessario mais mapas, sera necessario concatenar alguns arquivos
+Para ascender os mapas com cores diferentes, basta usar o comando:
+
+'set mpt [numero do mapa] [cor do mapa] [tipo de linha] [grossura da linha]'
+
+O grads tem como default, exibir as linhas de contorno de 0 a 2, sem que voce
+tenha que usar este comando: (mais detalhes ver os arquivos /home/grads/doc/map.*'
+O numero dos mapas foram colocados na lista abaixo:
+
+numero   descricao                              dentro do(s) arquivo(s) com o nome:
+  0      Contorno entre oceano e continente     brmap_hires
+  1      Divisao entre paises                   brmap_hires
+  2      Divisao entre estados do Brasil        brmap_hires
+  3      Contorno de Roraima                    rr ou brasil_hi
+  4      Contorno do Amapa                      ap ou brasil_hi
+  5      Contorno do Amazonas                   am ou brasil_hi
+  6      Contorno do Para                       pa ou brasil_hi
+  7      Contorno do Acre                       ac ou brasil_hi
+  8      Contorno de Rondonia                   ro ou brasil_hi
+  9      Contorno de Tocantins                  to ou brasil_hi
+ 10      Contorno do Maranhao                   ma ou brasil_hi
+ 11      Contorno do Piaui                      pi ou brasil_hi
+ 12      Contorno do Rio G Norte                rn ou brasil_hi
+ 13      Contorno do Paraiba                    pb ou brasil_hi
+ 14      Contorno do Pernambuco                 pe ou brasil_hi
+ 15      Contorno do Recife                     re ou brasil_hi
+ 16      Contorno do Alagoas                    al ou brasil_hi
+ 17      Contorno do Bahia                      ba ou brasil_hi
+ 18      Contorno do Ceara                      ce ou brasil_hi
+ 19      Contorno do Mato Grosso                mt ou brasil_hi
+ 20      Contorno de Goias                      go ou brasil_hi
+ 21      Contorno do Mato G do Sul              ms ou brasil_hi
+ 22      Contorno de Minas Gerais               mg ou brasil_hi
+ 23      Contorno de Espirito Santo             es ou brasil_hi
+ 24      Contorno de Rio de Janeiro             rj ou brasil_hi
+ 25      Contorno de Sao Paulo                  sp ou brasil_hi
+ 26      Contorno de Parana                     pr ou brasil_hi
+ 27      Contorno de Santa Catarina             sc ou brasil_hi
+ 28      Contorno de Rio G Sul                  rs ou brasil_hi
+ 29      Contorno das municipios Brasil         malhas
+ 30      Contorno das rodovias Brasil           vias
+ 31      Contorno dos rios do Brasil            rios
+ 36      Contorno da Regiao Sul do Brasil       regioes
+ 37      Contorno da Regiao Sudeste do Brasil   regioes
+ 38      Contorno da Regiao Centro O do Brasil  regioes
+ 39      Contorno da Regiao Norte do Brasil     regioes 
+ 40      Contorno da Regiao Nordeste do Brasil  regioes
+ 50      Contorno da Argentina com os estados   ar_hires
+ 51      Contorno dos Municipios da Argentina   ar_malhas
+101      Contorno da Bacia do Rio Amazonas      bacias
+102      Contorno da Bacia do Rio Tocantins     bacias
+103      Contorno da Bacia Norte/Nordeste       bacias
+104      Contorno da Bacia do Rio Sao Francisco bacias
+105      Contorno da Bacia Leste Nordeste       bacias
+106      Contorno da Bacia do Rio Parana        bacias
+107      Contorno da Bacia do Rio Paraguai      bacias
+108      Contorno da Bacia do Sul/Sudeste       bacias
+111 ... 188 Contornos de Sub-bacias             bacias       
+200      Cont. da Bacia do Paraib. Sul em SP    paraiba_sul_sp      
+ 

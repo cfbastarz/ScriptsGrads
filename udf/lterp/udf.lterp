@@ -1,0 +1,5 @@
+lterp 2 2 expr expr
+direct
+/usr/local/grads_scripts/udf/lterp/lterp
+lterp.in
+lterp.out

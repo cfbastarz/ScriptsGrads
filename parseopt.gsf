@@ -1,0 +1,60 @@
+***************************************************************************************
+*       $Id: parseopt.gsf,v 1.13 2012/03/17 22:47:37 bguan Exp $
+*       Copyright (C) 2012 Bin Guan.
+*       Distributed under GNU/GPL.
+***************************************************************************************
+function parseopt(instr,optprefix,optname,outname)
+*
+* Parse an option, store argument(s) in a global variable array.
+* Usage: rc=parseopt(instr,optprefix,optname,outname)
+*   instr: input string. May contain any characters, including blank spaces.
+*   optprefix: prefix indicating start of an option. E.g., - (hyphen).
+*   optname: name of option.
+*   outname: name of output global variable array.
+*   rc: # of argument(s) parsed.
+*
+* Example: num_arg=parseopt('myscript.gs -t Copyright (C) 2012 "Bin Guan"','-','t','text')
+* In above:
+*   instr='myscript.gs -t Copyright (C) 2012 "Bin Guan"'.
+*   optprefix='-'.
+*   optname='t'.
+*   outname='text'.
+* Two output variables are defined:
+*   num_arg is # of arguments to option '-t', here 4.
+*   arguments to option '-t' are stored in a global variable array _.text where:
+*   _.text.1='Copyright'
+*   _.text.2='(C)'
+*   _.text.3='2012'
+*   _.text.4='Bin Guan'
+*
+* Note 1: Combination of optprefix and optname must NOT be purely numeric.
+*         WRONG: num_arg=parseopt('myscript.gs -2 arg','-','2','text')
+* Note 2: Double-quoted string will be treated as a single argument, which is necessary when an argument begins with
+*         optprefix and/or containing blank spaces. However, double-quoting is NOT necessary for numerals.
+*         CORRECT: num_arg=parseopt('myscript.gs -lat -23.5','-','lat','latitude')
+* Note 3: Leading/trailing blank spaces and/or other REDUNDANT blank spaces in an argument will be ignored.
+* Note 4: Arguments to an option terminate at another optprefix or end of input string. Therefore, consistent optprefix should
+*         be used throughout the input string.
+*         WRONG: num_arg=parseopt('myscript.gs -x 1 +y 2','-','x','xaxis')
+* Note 5: 0 (zero) will be returned as number of arguments if no arguments were specified and/or the option does not exist.
+*         The output global variable array, however, will be left undefined (NOT empty string ''), or unchanged if already defined.
+*
+rc=gsfallow('on')
+
+cnt=1
+cnt2=0
+while(subwrd(instr,cnt)!='')
+  if(subwrd(instr,cnt)=optprefix''optname)
+    cnt=cnt+1
+    word=subwrd(instr,cnt)
+    while(word!='' & (valnum(word)!=0 | substr(word,1,1)''999!=optprefix''999))
+      cnt2=cnt2+1
+      _.outname.cnt2=parsestr(instr,cnt)
+      if(_end_wrd_idx=-9999);return cnt2;endif
+      cnt=_end_wrd_idx+1
+      word=subwrd(instr,cnt)
+    endwhile
+  endif
+  cnt=cnt+1
+endwhile
+return cnt2

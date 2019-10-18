@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.61 [en] (X11; U; SunOS 5.6 sun4u) [Netscape]">
+   <title>eofgrads V0.8 beta</title>
+</head>
+<body bgcolor="#FFFFDD">
+
+<center>
+<h1><a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/"> EOFGRADS</a>
+ </h1>
+ <font size="-1">Version 0.11 (early beta)</font>
+ </center>
+
+
+
+<center><p>
+A tool to compute Empirical Orthogonal Functions (EOFs) within <a href="http://grads.iges.org/grads">GrADS.<a>
+</p>
+<br>
+<a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/enso_eof.png">
+  <IMG SRC="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/enso_eof_sm.png"
+   ALIGN=CENTER>
+</a>
+</center>
+
+
+<h2> Installation</h2>
+<ol>
+
+<li>
+Download a suitable gzipped tar file
+<ul> 
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/dec/eofgrads_dec.tar.gz">
+ DEC Alpha (64bit)</a></li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/aix/eofgrads_aix.tar.gz"> 
+IBM AIX (64bit) </a></li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/mac/eofgrads_mac.tar.gz"> 
+Mac OS X  (64bit)</a></li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/linux/eofudf_linux.tar.gz"> PC(i386) Linux (32bit)</a> </li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/sgi/eofgrads_sgi.tar.gz"> 
+SGI Irix64 (64bit) </a></li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/sun/eofgrads_sun.tar.gz"> 
+Sun Solaris 2.6 (32bit) </a></li>
+<li> <a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/binaries/win/eofgrads.zip"> 
+Windows (32bit) </a></li>
+</ul>
+
+<li>
+Unpack script <tt>eof.gs</tt> and binary <tt>eofudf</tt> from the tar archive:
+<blockquote>
+<tt>gunzip -c eofgrads_*tar.gz | tar -xvf - </tt>
+</blockquote>
+</li>
+
+<li> 
+Move <tt>eof.gs</tt> to your <a href="http://grads.iges.org/grads/gadoc/script.html#intro">GrADS script</a> directory.
+</li>
+
+<li> If you never used a <a href="http://grads.iges.org/grads/gadoc/udf.html">
+<em>User Defined Function</em></a> (UDF), set your environment variable GAUDFT
+ to point to your <a href="http://grads.iges.org/grads/gadoc/udf.html#table">
+ <em>UDF table file</em></a>, for example:<br>
+	  <blockquote>
+      csh:<br>
+      <tt>$ setenv GAUDFT $HOME/grads/udft.txt</tt><br>
+      sh:<br>
+      <tt>$ export GAUDFT=$HOME/grads/udft.txt</tt><br>
+	  </blockquote>
+You may like to add these lines to your <tt>.login</tt> (csh) and/or <tt>.profile</tt> (sh) files.
+<li>
+   Add an eofudf entry to your UDF table file:
+<pre>
+eofudf 2 6 expr value value value value char
+sequential
+/your/path/to/eofudf <font size="-1">&lt;-- <em>Your path to the eofudf executable</em></font>
+eofudf.in
+eofudf.out
+
+</pre>
+</li>
+
+<li> 
+<em>(Only for Linux)</em>: The Linux <tt>eofudf</tt> binary requires a run-time library 
+<tt>libcxa.so.3</tt> which is included in the Linux tar-file.  <tt>Eofudf</tt> will only work if 
+you either install <tt>libcxa.so.3</tt> in one of the standard search directories
+for libraries, e.g.,  <tt>/usr/lib</tt>, or if you set the environment variable
+<tt>LD_LIBRARY_PATH</tt> to include the directory where you stored
+<tt> libcxa.so.3</tt>, e.g., if you stored <tt>libcxa.so.3</tt> in
+<tt>$HOME/lib</tt> and you are using the bash shell,
+<blockquote>
+<tt> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib</tt>
+</blockquote>
+You may like to add this to your environment setup to your <tt>.profile</tt> file.
+</li>
+</ol>
+
+
+
+
+<!--
+If you need to compile eofudf yourself, download the latest gzipped tar file
+<a href="http://www.atmos.ucla.edu/~munnich/Grads/EOF/current/eofgrads.tar.gz"> here</a>.
+<ol>
+<li>
+Uncompress and untar the tar file: <br>
+<pre>   $ gunzip -c eofgrads.tar.gz | tar -xvf -</tt> </pre>
+<li> Go into the eofgrads/src directory:
+<pre>   $ cd eofgrads/src </pre>
+<li> Edit eofudf.f and adjust the parameter <tt>resz</tt>. 
+<ul>
+<li><tt>resz=4</tt> for a 32bit machine, </li> 
+<li><tt>resz=8</tt> for a 64bit machine</li>
+</ul>
+<li> Run make:
+<pre>   $ make </pre>
+</li>
+
+</ol>
+
+-->
+
+
+<h2>Usage</h2>
+
+<blockquote>
+<tt>ga-> eof [options] fld</tt>
+</blockquote>
+with
+<blockquote>
+<tt>fld</tt>	 Input field (GrADS expression).
+</blockquote>
+
+
+<p><b>Options:</b>
+<blockquote>
+<pre>
+<tt>-neof &lt;# eof&gt;</tt>	 Number of EOFs (default: 12)
+<tt>-npc &lt;# pc&gt;</tt>	 Number of PCs (default: # eof)
+<tt>-tinc tinc;</tt>	 Time increment (default: 1)
+<tt>-nper nper;</tt>	 Minimal percent of defined data values required
+	for a grid point to be considered in the EOF calculation
+-o &lt;prefix&gt;	 Prefix for output files: (default: first 6 characters of  &lt;fld&gt;)
+</blockquote>
+</pre>
+
+
+<h3>Notes<h3>
+<ul>
+<li>Normalization: Variance(PCs)=1 </li>
+<li>Be carefull not to include spaces in the input field expression.</li>
+<li>The data are not weighted. Use cos(lat*3.141/180) for a simple area weight.</li>
+<li>The program is not well tested for inputs with data gaps.</li>
+Please let me know if you get wrong results for such input.
+<li>Avoid GrADS's cyclic continuation for global data;
+otherwise the cyclic points will be weighted twice. </li>
+<li>You must have write permission to the current working directory.</li>
+</ul>
+
+
+<h3>Examples</h3>
+<ol>
+<li>  Compute EOFs of field u using the current GrADS dimensions:</li>
+<pre>   ga-> eof u</pre>
+
+<li> Compute the first 20 area weighted EOF's and the first 10 PCs of "p"
+over land assuming a land mask "mask".  The output files shall get
+the prefix "pland". At least 50% of data shall exist at each grid
+point to be included in the EOF analysis. Analyze data in the northern
+mid-latitude (35N to 60N). 
+<pre>
+ga-> set lat 35 60
+ga-> set time jan1980 dec2000
+ga-> eof -o pland -neof 20 -npc 10 -nper 50 maskout(p,mask)*cos(lat*3.141/180)</pre>
+</ol>
+
+
+
+<h2>How it works</h2>
+
+To circumvent the Grads's UDF limitation to up to 2 dimensions
+eofgrads consists of a GrADS script <tt>eof.gs</tt> and a
+UDF <tt>eofudf</tt>.
+The script <tt>eof.gs</tt> uses the current GrADS dimension (<tt>lon,lat,lev,time</tt>)
+to write the data for the  EOF analysis to a file <tt>eofin.gad</tt>.
+It then  sets time to the first time step and executes the UDF <tt>eofudf</tt>
+via a GrADS <tt>display</tt> command.  <tt>Eofudf</tt> uses
+<a href="http://www.netlib.org/eispack/"><em>EISPACK routines </em></a>
+to compute the <em>eigenvalues</em> and <em>eigenvectors</em> (EOFs) of the
+covariance matrix of the data in <tt>eofin.gad</tt>
+The Principal Component (PCs) are obtained by projection of the original data onto the
+EOFs.</p> The EOFs and PCs are written to two GrADS 
+<a href="http://grads.iges.org/grads/gadoc/aboutgriddeddata.html">
+data descriptor file/data file pairs</a>:<tt>
+xxxx_eof.ctl/xxxx_eof.gad and xxxx_pc.ctl/xxxx_pc.gad</tt>
+The eigenvalues and the accounted ("explained") variances are written
+to a text file <tt>xxxx_eval.txt</tt>.
+
+Finally, a second call of <tt>eofudf</tt>  with a time series input is
+used to obtain the time information needed for
+<a href="http://grads.iges.org/grads/gadoc/descriptorfile.html#TDEF"><tt>TDEF</tt></a>
+records in the output control files.
+
+
+<!--
+<h2>Distribution</h2>
+
+<em>Please remember that this is a beta version.</em>
+-->
+
+<h2> Copyright</h2>
+
+(c) 2003 by Matthias Munnich.<br>
+I like this beta version <em>eofgrads</em> to be regarded as "review-ware", i.e., anybody
+who uses it should <a href="mailto:munnich@atmos.ucla.edu"?subject=eofgrads>mail me</a>
+ a short evaluation of their experience with <em>eofgrads</em>, reporting bugs, problems 
+with installation or use, and typo's in script or documentation or suggestion for improving it.
+I am planning to release a stable (i.e., non-beta) version of eofgrads under some open-source
+license.<p>
+
+
+As usual, <em> anything free comes with
+<pre>
+                            NO WARRANTY
+
+  BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+</pre>
+
+<h3>Source code</h3>
+The source code shall be release when eofgrads is stable (non-beta).
+
+<!--
+<h2>Feedback and bug reports</h2>
+-->
+
+<hr>
+<address>
+
+<a href="mailto:munnich@atmos.ucla.edu?subject=eofgrads">Matthias M&uuml;nnich</a></address>
+
+</body>
+</html>

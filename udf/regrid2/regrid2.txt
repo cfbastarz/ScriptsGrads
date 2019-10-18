@@ -1,0 +1,550 @@
+		 GrADS User-Defined Function #1
+                                                      
+			     REGRID
+			   Version 2.0
+                                                      
+
+			  Mike Fiorino
+                                                      
+		    University of California
+	     Lawrence Livermore National Laboratory
+     Program for Climate Model Diagnosis and Intercomparison
+		       P.O. Box 808 L-264
+		       Livermore, CA 94551
+
+		    fiorino@typhoon.llnl.gov
+
+	     510-423-8505 (voice) 510-422-7675(fax)
+                                                      
+			17 January, 1995
+			  1 August, 2001
+				
+
+
+Changes
+-------
+
+20010801 -- fixed bug in input gaussian calculator, ??_igNN where
+NN is a number of gaussian latitudes now works.
+
+
+PREFACE:
+
+Regrid, the first in a series of Grid Analysis and Display System
+(GrADS) user-defined functions developed originally for the
+Development Division of the National Meteorological Center, has
+been substantially improved and now features a simpler calling
+syntax.  This is a BETA version, meaning I have tested it a lot
+but have not exposed its warts to the world.  It is YOUR job to
+BREAK it so I can correct it...
+
+The original version can be found by
+
+anon ftp to climate.gsfc.nasa.gov
+cd /pub/fiorino
+bin
+mget *regrid*
+
+The installation calls the routine regrid2beta.  This allows for
+intercomparison with the original regrid and transition to the
+new version.  When you are satified with its performance, then
+you can edit the GrADS user-defined function table and replace
+the regrid binary.
+
+This document only assumes you have a basic knowledge of GrADS
+and does not require experience with the original version regrid
+v1.0.
+
+regrid has NOT been tested on PCs; only Suns and SGIs...
+
+
+GrADS USER DEFINED FUNCTIONS:
+
+A user-defined function works like any other GrADS function
+(e.g., hcurl(u,v) ), but is external to GrADS itself.  In
+essence, the user-defined function capability is an interface
+specification between GrADS and codes developed by users in
+potentially other languages (e.g., C and FORTRAN).
+
+The regrid user-defined function solves a common problem of
+transforming HORIZONTAL 2-D gridded fields from/to different
+resolutions/grid types for quantitative intercomparison.  For
+example, a model monthly mean precipitation field on a T126
+gaussian grid can be compared to an observed climatology on a
+2.5x2.5 grid using regrid.  regrid offers many transform options
+ranging from simple bilinear interpolation to box averaging with
+"voting."  Additional methods can be added to regrid as needed.
+
+Your comments on the format of this documentation and regrid
+itself are greatly desired.  Furthermore, I will be maintaining a
+list of users to contact when making bug fixes and upgrades.
+Please direct your comments by email.
+
+DESCRIPTION:
+
+regrid transforms two-dimensional (2-D) lat/lon GrADS grids from
+one grid type/resolution to another.  The input is any 2-D
+lat/lon grid defined by the current GrADS lat/lon dimension
+environment.  regrid handles input grids which are cyclically
+continuous in longitude and excludes undefined input grid values
+from participation in the transform.  If a valid transform cannot
+be made (i.e., insufficient defined data points), the output grid
+is set to undefined.  regrid supports two output grid types: 1)
+lat/lon with fixed increments; and 2) gaussian.  Four transforms
+are available: 1) box averaging for regridding fine to coarse
+grids; 2) box averaging with "voting" for noncontinuous/index
+data such, as soil type; 3) bilinear interpolation; and 4)
+4-point bessel interpolation.
+
+
+INSTALLATION AT NMC:
+
+1)    Make sure you are running GrADS Version 1.4 or higher and that you start
+      GrADS from a directory where you have write permission!
+
+2)    Change your environment:
+
+      For Suns:  setenv GAUDFT /export/nmc01/wd20mf/grads/udf/sun/udft
+      For SGIs:  setenv GAUDFT /export/nmc01/wd20mf/grads/udf/sgi/udft   
+
+3)    File Locations:
+
+      docs (regrid.doc regrid.wp) and source (*.f) are in
+
+      /export/nmc01/wd20mf/grads/udf/regrid
+
+
+INSTALLATION OUTSIDE NMC:
+
+Refer to the readme.regrid2 in regrid2beta.tar.
+
+
+USAGE:
+
+regrid2(G1,X1,X2,C1,X3,X4,X5,X6)
+
+G? = a GrADS grid expression (e.g., z or ave(z.3(t+0,t=120,1yr))
+X? = a float parameter
+C? = a character string parameters
+
+REQUIRED params:  G1, X1
+
+where:
+
+   G1     =  any valid GrADS grid expression  
+
+   X1     =  delta longitude (dlon) or # of gaussian longitudes on the
+	     GLOBE
+
+   X2     =  delta latitude (dlat) or # of gaussian latitudes on the GLOBE  
+
+   C1     =  character option string
+ 
+   X3     =  special case options #1
+
+   X4     =  special case options #2
+
+   X5 	  =  special case options #3
+
+   X6     =  special case options #4
+
+
+OPTION STRING:
+
+C1 consists of a sequence of up to four options separated by the
+underscore (_).  They are:
+
+ba	-	box averaging (the default does NOT have to be set)
+vt	-	"vote" interpolation or box averaging with voting
+bl	- 	bi-linear interpolation
+bs	-	3rd order Bessel interpolation
+
+igXXX   -	input grid is gaussian with XXX the number of
+		gaussian latitudes (e.g., ig92 for the NMC T62
+		grid).  XXX must be >= 8 and a multiple of four.
+		This param is used to invoke a more precise
+		calculation of the boundary between gaussian grid boxes
+
+
+maXXX  	- 
+
+minimum % (XXX) area which must be covered with DEFINED
+data boxes to be considered a valid interpolation.  Applies ONLY
+to box averaging without voting when the input grid has undefined
+points.  regrid v1.0 assumed am was 0 or that if ANY input grid
+boxes contained defined data which intersected the output grid
+produced a box average.  This was clearly too liberal and ma is
+now set by default to 50% or that half the output grid box must
+be covered with defined data to produced a defined output grid
+point
+
+gg - 
+
+tells regrid that X1 and X2 are the number of GLOBAL gaussian
+longitudes and latitudes on the output grid, even if the output
+grid is a non global.  X1 and X2 define the gaussian grid.
+
+p1 	-
+
+special option which forces the (1,1) point of the output grid to
+be anchored to a specific lon,lat defined by the pair (X3,X4) or
+(X5,X6).  See special cases below:
+
+
+SPECIAL CASES:
+
+There are two pairs of special case params: (X3,X4) and (X5,X6).
+The ordering depends on the order that the options are specified
+in C1.  The example will make it clear how this works
+
+
+Case 1:		Box averaging with voting (C1 = vt) 
+
+	(X3,X4) or (X5,X6) set the fraction (called VT1 and VT2)
+of an output grid box which must be covered by defined input grid
+data for a "winner" to be chosen in the election.  The default is
+VT1=VT@=0.5.
+
+	VT1 = 0.0 - 1.0; minimum fraction of an output grid
+point when there is only one candidate
+
+   	VT2 = 0.0 - 1.0; same as VT1 except for three or more
+candidates.  The fraction for two candidates is midway between X4
+and X5.
+   
+   X4, X5 = 1.0 would require that 100% of the output grid box
+must be covered by a single, unique value from the input grid
+whereas X4,X5 = 0.0 would allow a winner to be chosen if ANY
+candidates where running.  The default value of 0.5 means that a
+simple majority is required to have a winner.
+   
+Case 2:      	Set the beginning lat/lon (the (1,1) point) of
+		the output grid by overriding the automatic
+		lat/lon bounds setting of regrid for LON-LAT
+		output grids
+   
+   P1 = beginning longitude (lower left hand corner or the point
+(1,1) on the grid) of the output grid
+
+   P2 = beginning latitude of the output grid
+
+          The number of points in longitude is then calculated
+as:
+ 
+   (eastward-most longitude of the input grid - X4)/abs(X1)+1
+    
+   and for latitude:
+
+   (northward-most latitude of the input grid - X5)/abs(X2)+1
+  
+See the METHODOLOGY section for a description of the transforms  
+
+
+EXAMPLES:
+
+1) Regrid a global T62 gaussian grid (192x94) to a 2.5 deg lat/lon by box
+   averaging,
+ 
+   open /reanl1/pilot20/fluxgrb8508.ctl
+   set x 1 192
+   set y 1 94
+   define p25=regrid2(p,2.5,2.5,ba) 
+
+or more simply,
+
+   define p25=regrid2(p,2.5)
+
+
+Note: The lat/lon dimension environment is set using grid
+coordinates (x,y) to make the input and output grids global. To
+minimize future graphics/analysis calculations with the regridded
+field, we use the GrADS define function to store the grid in
+memory where it can be referenced as any other GrADS grid.
+
+
+2) Regrid a 4x5 SiB vegetation type to a R15 (48x40) gaussian
+grid using box averaging with "voting."  Require that at least
+60% of the output grid box must be covered with a single
+candidate value from the input grid for an election to occur.
+Otherwise the output grid box is set to undefined.  Relax the
+one-candidate election requirement to 20% when there are three or
+more candidates,
+ 
+   open /export/sgi18/fiorino/data/sib/sib.param.annual.ctl  
+  set lon 0 360
+  set lat -90 90
+  define i21=regrid2(index,48,40,gg_vt,0.60,0.20)
+  set gxout grfill
+  d index
+  d i21
+
+Note: During candidate selection, undefined input grid points do
+not contribute to the fraction of the output grid box covered
+with input grid boxes.  The best way to display index type data
+in GrADS is to use the "grid fill" display option (set gxout
+grfill).  GrADS will draw the grid box and color it according to
+the grid value.
+
+3) Regrid 1x1 Aviation run 500 mb z to 2.5x2.5 grid using bessel interpolation,
+ 
+   open /export/sgi39/wd22sl/grads/avn/avn.93092800.fcst.ctl  
+  set lev 500
+  set lat 20 70
+  set lon -140 -40
+  d regrid2(z,2.5,2.5,bs)
+
+Note: Box averaging would be more appropriate when regridding to
+a coarser grid.
+
+4) Regrid 1x1 Aviation run 500 mb z to 2.5x2.5 grid using box averaging and
+   setting the    grid to start at a specific lat/lon,
+   
+   open /export/sgi39/wd22sl/grads/avn/avn.93092800.fcst.ctl  
+  set lev 500
+  set lat 20 70
+  set lon -140 -40
+  d regrid2(z,-2.5,-2.5,ba_p1,-141.0,21.0)
+
+Note: the -2.5 for dlat/dlon tells regrid that the fourth and
+fifth parameters will be setting the beginning lat/lon of the
+output grid.  The grid spacing of the output grid is abs(-2.5)
+deg.
+
+
+RESTRICTIONS:
+
+1) regrid currently is limited to input/output grids of dimension
+730x380 (~T225), but this can be easily changed by modifying the
+nimax,njmax parameters in FORTRAN source in regrid2beta.f
+
+2) Any valid GrADS grid can be regridded.  However, GrADS (V1.5)
+currently only supports lat/lon grids where the mapping between
+grid and world coordinates is one dimensional, i.e.,
+longitude(i,j)=f(i) vice longitude(i,j)=f(i,j).
+ 
+3) Only two output grid types have been implemented: 1) lat/lon
+(dlat does NOT have to equal dlon); and 2) gaussian grids.
+Mercator output grids could be added as lon(i,j)=f(i) and
+lat(i,j)=f(j) in this projection.
+
+4) The lat/lon bounds of the output grid are calculated within
+regrid to encompass as much of the input grid as possible.  For
+uniform lat/lon output grids, the number of grid points and the
+starting lat/lon are based on fitting the input grid within a
+"template" global grid with the following properties: 1) a grid
+spacing specified by X1 (dlon) and X2 (dlat); 2) starts at 0W
+with a grid point on the equator; and 3) is cyclically continuous
+in longitude.  The lat/lon bound setting algorithm can be
+overridden by setting X1 and/or X2 to the negative of the
+required output grid spacing.
+
+
+SUPPORT:
+
+The FORTRAN source code is available upon request and you are
+free to use the regrid routines in other programs or to modify
+the algorithms.  However, I would prefer that you send bug
+reports, comments and suggestions for improvements directly to me
+(email is best) so that I can maintain a single "standard"
+version.
+
+
+METHODOLOGY:
+
+The first step in the regrid transform is to define a
+relationship between the input and output grids within a common
+frame of reference or coordinate system.  regrid bases the
+inter-grid relationship on "world" coordinates, and the GrADS map
+between grid coordinates (i,j) and world coordinates (lon, lat).
+As noted above, the world-grid mapping in GrADS is
+one-dimensional.  Thus, the world-grid map of an input GrADS grid
+takes the form,
+
+   lat(i,j)=f(j) and lon(i,j)=g(i).
+
+By specifying a similar mapping for an output GrADS grid of the
+form
+ 
+   LAT(I,J)=F(J) and LON(I,J)=G(I), 
+
+as defined by the input parameters X1, X2 and X3-6, regrid
+calculates,
+
+   X(I)=i(G(I)) and Y(J)=j(F(J)),
+
+where i(G(I)) is the location of the output grid with respect to
+the input grid dimension i and j(F(J)) for j.
+
+For simplicity, and greater generality, regrid assumes that the
+grid point is at the center of a rectangular grid box and maps
+the location of the boundaries of the output grid box to that of
+the input grid box.  By default the boundaries are assumed to lie
+midway between grid points and while this is not strictly true
+for a gaussian grid near the poles, it is close nonetheless.  The
+boundaries for gaussian grids can be calculated by specifying
+igXXX in C1.  The reason why this cannot be automatic is that
+GrADS does not directly support gaussian grids (i.e., there is no
+ydef gauss 40 option in the data descriptor .ctl file, just
+linear and levels).
+
+Given the inter-grid map X(I) and Y(J), regrid uses two basic
+methods for doing the transform: 1) box averaging; or 2)
+interpolation.  Box averaging is simply the area-weighted
+integral of all input grid boxes which intersect an output grid
+box, divided by the area of the output grid box.  This approach
+is most appropriate: 1) for transforming from fine (e.g., dlon =
+1 deg) to coarse grids (e.g., dlon = 2.5 deg); and 2) when
+approximate conservation of an integral quantity (e.g., global
+average) is desired.
+
+Box averaging is also useful for regridding noncontinuous,
+parametric or "index" data.  For example, suppose you have been
+given a 0.5x0.5 deg global grid of vegetation type and want to
+use these data in an R43 global model.  The intuitive solution is
+to assign the output grid the value of the intersecting input
+grid box(es) which account(s) for the greatest percentage of the
+output grid box surface area.  In the example of vegetation data,
+if 70% of the output grid box is covered by deciduous forest,
+then it might be reasonable to call the output grid deciduous
+forest.  However, if there were 5 distinct vegetation types or
+"candidates" available, then regrid, being an American function,
+holds an "election" and select a "winner" based on the candidate
+covering the greatest percentage of the total surface area in the
+output grid box.  Of course, coming from an imperfect democracy,
+the election can be "rigged" for a desired effect....
+
+This grid transform strategy is invoked using the "vote" option
+in box averaging (vt in C1).  Conditions on the percentage of the
+output grid box (number of candidates and what it takes to get
+elected) can be finely controlled by the X4 and X5 parameters.
+
+Perhaps the most conventional way of regridding meteorological
+data (e.g., 500 mb geopotential heights) is interpolation because
+weather data tend to be continuous .  regrid features a 4x4 point
+bessel interpolation routine developed at Fleet Numerical
+Meteorology and Oceanography Center (courtesy of D. Hensen,
+FNMOC).  While this routine is in wide use at FNMOC, the regrid
+implementation has been substantially improved to handle more
+general input grids.
+
+First, bilinear interpolation is performed at all points to
+produce a "first guess."  Improvements to the bilinear "first
+guess" are made using the higher-order terms in the bessel
+interpolator, but only if the bessel option is set (i.e., bs in
+C1).  Second, an undefined value in the 2x2 bilinear stencil
+causes the output grid to be undefined.  If the bilinear value is
+defined, but any of the points in the larger 4x4 bessel stencil
+are undefined, the output grid is assigned the bilinear value.
+The third improvement is that the routine handles grids which are
+cyclically continuous in longitude.
+
+It is generally recommended that you use the bessel option when
+interpolating because the higher-order terms in the polynomial
+interpolation function produce a closer fit to the original data
+in regions of rapid changes (e.g., large gradients of the
+gradient around low pressure centers).
+
+
+ADDITIONAL NOTES:
+
+1) Where to run GrADS
+
+There is normally no problem firing up GrADS from ANY directory
+because GrADS typically only READS data, but with user-defined
+functions and regrid, you'll need to start GrADS from a directory
+where you have write permission.  The reason is that when a
+user-defined function is invoked within GrADS, a file with the
+grid data is written out by GrADS and then a file written by your
+function is read back into GrADS for further processing.
+Although this restriction could be modified by changing the code
+and the user-defined function table, the default is for regrid to
+read/write from the directory where GrADS was first invoked.  You
+will notice when exiting GrADS that regrid leaves behind three
+files: 1) udf.regrid.gfi (input to regrid from GrADS); 2)
+udf.regrid.gfo (output from regrid returned to GrADS); and 3)
+udf.regrid.out (diagnostic print file).  Use the GrADS shell
+escape in a script to remove these regrid "droppings" (e.g., !rm
+udf.regrid.*).  Future user-defined functions will the prefix
+"udf." so that the rm command will take out all droppings from
+other user-defined functions.
+
+
+2) Using regridded fields in other GrADS functions
+
+The only down side to a regridded field is that its dimension
+environment cannot be controlled by its "grid" coordinate system.
+The best way to understand this is by an example. Suppose you
+regrid a T62 global Gaussian grid (192x94) to a uniform 2.5 deg
+grid (144x73) using box averaging and the GrADS define
+capability, e.g.,
+
+define p25=regrid2(p,2.5,2.5,ba) 
+
+You now want to calculate the global average of the original
+field p and the defined regridded field p25.  The only
+unambiguous way (using all grid boxes) of doing this calculation
+for p would be,
+
+d aave(p,x=1,x=192,y=1,y=94)
+
+and not,
+
+d aave(p,lon=0,lon=360,lat=-90,lat=90)
+ 
+This is because the cyclic continuity feature in GrADS would
+count grid boxes at the prime meridian twice, i.e., GrADS would
+really be doing,
+
+d aave(p,x=1,x=193,y=1,y=94)
+
+Trying to find the global average of the 2.5 deg regridded field
+p25 using,
+
+d aave(p25,x=1,x=144,y=1,y=73)
+
+would not yield a global average even though p25 IS 144x73!
+However,
+
+d aave(p25,x=1,x=192,y=1,y=94)
+
+would because GrADS converts the grid coordinate range to
+(x=1,x=192) to world coordinates (lon=0,lon=360-1.875) and grabs
+all grid boxes in p25 within that range when putting together the
+data for the areal averaging calculation.  Despite this
+restriction on grid coordinates, you can access specific chunks
+of a regridded defined variable using world coordinates.  Suppose
+you want to look at the latitudinal variation of the u wind
+component at 180 deg and 500 mb on a 1 deg grid, e.g.,
+
+set lev 500
+set lon 180
+set lat -90 90
+d u
+
+if the you had,
+
+define u5=regrid2(u,5)
+
+you could then,
+
+d u5(lon=175)
+
+but not,
+
+d u5(x=1)
+
+
+3) Diagnostic messages from regrid
+
+regrid sends information on the transform process
+(starting/ending lat/lon, number of grid points and the
+regridding method) to the terminal window where you are running
+GrADS.  Additionally, errors during the call to regrid (e.g.,
+trying to regrid a two-dimensional longitude-pressure cross
+section) will be displayed, the process terminated, and control
+returned back to GrADS.
+
+Future releases of regrid will allow this diagnostic information
+to be passed back to a script for additional control of GrADS
+processing.  However, this requires a change to the specification
+of the user-defined function interface and GrADS itself.

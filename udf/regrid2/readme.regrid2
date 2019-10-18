@@ -1,0 +1,112 @@
+		    REGRID Installation Notes
+
+			   version 2.0
+				
+
+			  Mike Fiorino
+                                                      
+			fiorino@tenkimap.com
+
+	     510-423-8505 (voice) 510-422-7675 (fax)
+                                                      
+			17 January, 1995
+			 29 March, 1995
+			  7 July, 1997
+		       12 September, 2000
+			 1 August, 2001
+
+
+Changes
+-------
+
+20010801 -- fixed bug in input gaussian calculator, ??_igNN where
+NN is a number of gaussian latitudes now works.
+
+---------------------------------
+
+The file regrid2.tar.gz contains the the source, makefile, docs and
+user-defined function table for version 2.0 of the GrADS
+user-defined function regrid.  The source file contains lots of
+routines used by other udfs and those being developed.  Future
+releases will clean this mess up a bit.
+
+Be sure to ftp regrid2.tar in binary mode.  Also, regrid requires
+that you are running V1.5+ of GrADS.  You can get the latest
+version by anonymous ftp to
+
+grads.iges.org
+cd beta
+
+Installation steps:
+
+1)	Decide where to install regrid.  
+
+The makefile and these instruction will assume you have installed
+GrADS in a directory call /home/myhome/grads
+
+
+2)	Copy regrid2beta.tar to /home/myhome/grads
+
+3)	tar -xvf regrid2.tar
+
+makes the directory /home/myhome/grads/udf and
+/home/myhome/grads/udf/regrid2
+
+4)	cd udf
+
+go the the directory which contains the file udft.regrid2.  This
+is the file GrADS looks to when locating the user-defined
+function executable.
+
+5)	cd regrid2  (you'll be in /home/myhome/grads/udf/regrid2
+
+go down to the regrid2 directory.  
+
+6)	edit Makefile and change
+
+REGRID_DIR = /home/myhome/grads
+
+I'm using the portland group compiler on my linux box so you'll
+have to change the CFT and LDR options
+
+7)	make -f Makefile
+
+makes the executable file regrid2 in /home/myhome/grads/udf/
+
+8)	edit /home/myhome/grads/udf/udft.regrid2
+
+and change the location of the execuable, e.g., it should be
+
+regrid2 1 8 expr value value char value value value value
+sequential
+/home/myhome/grads/udf/regrid2
+udf.regrid.gfi
+udf.regrid.gfo
+
+9)	setenv GAUDFT /home/myhome/grads/udf/udft.regrid2
+
+in your .cshrc/.login file.
+
+or	export GAUDFT=/home/myhome/grads/udf/udft.regrid2
+ 
+in sh and ksh (.profile)
+
+This tells GrADS where regrid is located and the name of the
+input and output files.
+
+10)	consult the documentation files in /home/myhome/grads/udf/regrid2
+
+regrid2.txt is the doc and udf.txt comes from Brian Doty and
+describes udfs in general.
+
+GOOD LUCK and please contact me email if you should have any
+question regarding the installation and use of regrid....
+
+
+Mike
+
+
+
+
+
+

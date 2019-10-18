@@ -1,0 +1,64 @@
+***************************************************************************************
+*	$Id: maxat.gsf,v 1.2 2011/09/26 00:06:22 bguan Exp $
+*	Copyright (C) 2011 Bin Guan.
+*	Distributed under GNU/GPL.
+***************************************************************************************
+function maxat(expr)
+*
+* Get (x,y,z,t) at 1st ocurrence of max(expr).
+*
+rc=gsfallow('on')
+
+qdims()
+
+'set t '_ts
+'set z '_zs
+'set y '_ys
+'set x '_xs
+'display 'expr
+valmax=subwrd(result,4)
+_maxatt=_ts
+_maxatz=_zs
+_maxaty=_ys
+_maxatx=_xs
+
+tcnt=_ts
+while(tcnt<=_te)
+'set t 'tcnt
+zcnt=_zs
+while(zcnt<=_ze)
+'set z 'zcnt
+ycnt=_ys
+while(ycnt<=_ye)
+'set y 'ycnt
+xcnt=_xs
+while(xcnt<=_xe)
+'set x 'xcnt
+
+'display 'expr
+val=subwrd(result,4)
+if(val>valmax)
+valmax=val
+_maxatt=tcnt
+_maxatz=zcnt
+_maxaty=ycnt
+_maxatx=xcnt
+endif
+
+xcnt=xcnt+1
+endwhile
+ycnt=ycnt+1
+endwhile
+zcnt=zcnt+1
+endwhile
+tcnt=tcnt+1
+endwhile
+
+say 'MAXDIMS>INFO: first max. = 'valmax' at ('_maxatx','_maxaty','_maxatz','_maxatt').'
+
+'set x '_xs' '_xe
+'set y '_ys' '_ye
+'set z '_zs' '_ze
+'set t '_ts' '_te
+
+return valmax

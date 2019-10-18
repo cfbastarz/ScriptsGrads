@@ -1,0 +1,26 @@
+***************************************************************************************
+*	$Id: smth9x.gsf,v 1.2 2011/08/08 21:52:30 bguan Exp $
+*	Copyright (C) 2008 Bin Guan.
+*	Distributed under GNU/GPL.
+***************************************************************************************
+function smth9x(expr,x)
+*
+* Construct a string to run smth9() on a GrADS expression for a number of times.
+*
+* Example: 'display 'smth9x('sst',3)
+*          Note that sst is quoted.
+*
+str=''
+cnt=1
+while(cnt<=x)
+str=str'smth9('
+cnt=cnt+1
+endwhile
+str=str''expr
+cnt=1
+while(cnt<=x)
+str=str')'
+cnt=cnt+1
+endwhile
+
+return str

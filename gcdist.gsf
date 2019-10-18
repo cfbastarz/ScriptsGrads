@@ -1,0 +1,28 @@
+***************************************************************************************
+*       $Id: gcdist.gsf,v 1.1 2010/04/08 06:35:19 bguan Exp $
+*       Copyright (C) 2010 Bin Guan.
+*       Distributed under GNU/GPL.
+*
+* Vincenty formula is used.
+* Reference: http://en.wikipedia.org/wiki/Great-circle_distance
+***************************************************************************************
+function gcdist(lon1,lon2,lat1,lat2)
+*
+* Calculate great-circle distance between two points on earth surface.
+* Input unit: degree.
+* Output unit: km.
+*
+pi=3.14159
+mean_radius=6371
+phi1=lat1/180*pi
+phi2=lat2/180*pi
+lambda1=lon1/180*pi
+lambda2=lon2/180*pi
+dlambda=math_abs(lambda2-lambda1)
+tmpA=math_cos(phi2)*math_sin(dlambda)
+tmpB=math_cos(phi1)*math_sin(phi2)-math_sin(phi1)*math_cos(phi2)*math_cos(dlambda)
+tmpC=math_pow(tmpA,2)+math_pow(tmpB,2)
+nominator=math_sqrt(tmpC)
+denominator=math_sin(phi1)*math_sin(phi2)+math_cos(phi1)*math_cos(phi2)*math_cos(dlambda)
+dsigma=math_atan2(nominator,denominator)
+return dsigma*mean_radius

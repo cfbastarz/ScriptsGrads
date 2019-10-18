@@ -1,0 +1,28 @@
+***************************************************************************************
+*       $Id: midlon.gsf,v 1.1 2011/01/29 06:44:44 bguan Exp $
+*       Copyright (C) 2010 Bin Guan.
+*       Distributed under GNU/GPL.
+*
+*       Reference:
+*       http://mathforum.org/library/drmath/view/55417.html
+*       http://www.movable-type.co.uk/scripts/latlong.html
+***************************************************************************************
+function midlon(lon1,lon2,lat1,lat2)
+*
+* Calculate middle longitude between point 1 and point 2.
+* Input unit: degree.
+* Output unit: degree.
+*
+pi=3.14159
+phi1=lat1/180*pi
+phi2=lat2/180*pi
+lambda1=lon1/180*pi
+lambda2=lon2/180*pi
+tmp_Bx=math_cos(phi2)*math_cos(lambda2-lambda1)
+tmp_By=math_cos(phi2)*math_sin(lambda2-lambda1)
+tmp=math_pow(math_cos(phi1)+tmp_Bx,2)+math_pow(tmp_By,2)
+lambda_middle=lambda1+math_atan2(tmp_By,math_cos(phi1)+tmp_Bx)
+phi_middle=math_atan2(math_sin(phi1)+math_sin(phi2),math_sqrt(tmp))
+lon_middle=lambda_middle/pi*180
+lat_middle=phi_middle/pi*180
+return lon_middle

@@ -1,2 +1,2 @@
-# ScriptsGrads
-Scripts do Grads de uso geral.
+# gscript
+Script and script function libraries for GrADS

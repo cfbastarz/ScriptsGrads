@@ -1,0 +1,10 @@
+function rgnwrd( str, n_start, n_end )
+  n = n_start
+  ret = ''
+  while( n <= n_end )
+    tmp = subwrd( str, n )
+    if( tmp = '' ) ; break ; endif
+    ret = ret % tmp % ' '
+    n = n + 1
+  endwhile
+return ret
